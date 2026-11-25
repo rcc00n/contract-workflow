@@ -77,6 +77,12 @@ class OCRParseTests(SimpleTestCase):
         parsed = parse_front(rois)
         self.assertEqual(parsed["license_issued_by"][0], "ГИБДД 8210")
 
+    def test_issuer_retains_a_separated_numeric_office_code(self):
+        parsed = parse_front({
+            "license_issued_by": {"text": "ГИБДД / 8210", "confidence": 0.9},
+        })
+        self.assertEqual(parsed["license_issued_by"][0], "ГИБДД 8210")
+
     def test_driving_since_invalid_against_valid_until(self):
         rois = {
             "driving_since": {"text": "16.03.2023", "confidence": 0.9},

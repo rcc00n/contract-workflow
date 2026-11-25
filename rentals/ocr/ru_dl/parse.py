@@ -359,7 +359,8 @@ def _clean_issuer_line(text: str) -> str:
     # Discard a separate Latin transliteration before OCR character repair.
     # Otherwise GIBDD leaves a Cyrillic B and duplicates the issuing code.
     segments = re.split(r"[/|\n]+", cleaned)
-    cleaned = " ".join(segment for segment in segments if CYRILLIC_RE.search(segment))
+    cleaned = " ".join(segment for segment in segments
+                       if CYRILLIC_RE.search(segment) or not LATIN_RE.search(segment))
     cleaned = cleaned.translate(LATIN_TO_CYR)
     cleaned = ISSUER_CLEAN_RE.sub(" ", cleaned)
     cleaned = normalize_whitespace(cleaned)
