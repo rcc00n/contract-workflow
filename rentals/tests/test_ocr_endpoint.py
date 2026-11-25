@@ -38,7 +38,7 @@ class OCRDriverLicenseEndpointTests(TestCase):
             "images": [],
             "debug": {"front_raw": {}, "back_raw": {}, "raw_text": ""},
         }
-        with patch("rentals.views.extract_ru_dl", return_value=mocked_response):
+        with patch("rentals.ocr.extract_ru_dl", return_value=mocked_response):
             front_file = SimpleUploadedFile("front.jpg", b"fake", content_type="image/jpeg")
             response = self.client.post(self.url, {"front_image": front_file})
         payload = response.json()

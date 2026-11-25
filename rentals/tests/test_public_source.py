@@ -1,3 +1,4 @@
+import subprocess
 from pathlib import Path
 from django.conf import settings
 from django.contrib.staticfiles import finders
@@ -22,3 +23,10 @@ class PublicSourceTests(SimpleTestCase):
         from django.utils.module_loading import import_string
         self.assertTrue(callable(import_string(settings.WSGI_APPLICATION)))
         self.assertTrue(callable(import_string(settings.ASGI_APPLICATION)))
+
+    def test_environment_configuration_is_not_tracked(self):
+        root = Path(settings.BASE_DIR)
+        tracked = subprocess.check_output(
+            ["git", "ls-files", "--", ".env", ".env.*"], cwd=root, text=True
+        ).splitlines()
+        self.assertEqual(tracked, [".env.example"])

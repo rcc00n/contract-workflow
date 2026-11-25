@@ -40,27 +40,29 @@ flowchart LR
 | Import and OCR | openpyxl/xlrd, OpenCV, PaddleOCR |
 | Runtime | Gunicorn, WhiteNoise, Docker tooling |
 
-## Local development
+## Reproduce the core behavior offline
 
-Use a fresh checkout, a Python environment compatible with
-[`requirements.txt`](requirements.txt), and an empty local PostgreSQL database.
-The Docker build uses Python 3.11 and lists native dependencies for PDF and OCR.
-Configure your own local values before running Django; see
-[the development guide](docs/DEVELOPMENT.md).
+The reviewer/CI profile uses Python 3.12, temporary SQLite, synthetic documents
+created in memory, and a mocked OCR endpoint. It does not download OCR models or
+connect to a customer database.
 
 ```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-# Set your local DJANGO_* and database configuration first.
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py runserver 127.0.0.1:8000
+python3.12 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r ci/requirements.txt
+python scripts/test_offline.py
+python manage.py makemigrations --check --dry-run --settings=car_rental.test_settings
+python scripts/check_public_history.py
 ```
 
-Start with your own local administrator and empty data. The commands correspond to
-the source entry points; they are not a claim that a new database, OCR model or
-document-rendering environment was verified during the documentation refresh.
+[CI](.github/workflows/ci.yml) runs these checks with network calls forbidden in
+the test process. [A synthetic document walkthrough](docs/ENGINEERING_CASE.md)
+connects the business rules, renderer and privacy boundary to the relevant tests.
+
+Full local development, private template configuration and optional OCR inference
+use the broader runtime dependencies; follow [Development](docs/DEVELOPMENT.md).
+Use your own local account and empty data. The tracked environment example contains
+placeholders; `.env` and operational uploads must remain outside version control.
 
 ## Source map
 
@@ -85,5 +87,6 @@ legal suitability.
 
 Local startup requires configured environment values and PDF/OCR dependencies.
 Use dedicated local data and review the intended storage and access rules before
-processing customer documents. No CI result, coverage percentage or new licence
-grant is asserted here; existing third-party asset notices remain intact.
+processing customer documents. The deterministic CI profile does not validate OCR inference quality, deployment
+readiness or PostgreSQL concurrency. No new licence is granted; third-party asset
+notices remain intact.

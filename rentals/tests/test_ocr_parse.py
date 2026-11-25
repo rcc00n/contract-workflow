@@ -14,11 +14,14 @@ class OCRParseTests(SimpleTestCase):
         self.assertEqual(normalize_date("12.05.1990"), "1990-05-12")
         self.assertEqual(normalize_date("01/02/05"), "2005-02-01")
         self.assertIsNone(normalize_date("32.13.2020"))
-        from rentals.ocr.ru_dl import parse as ru_parse
-
-        if ru_parse._ru_time_parse is None:
-            self.skipTest("rutimeparser not installed")
         self.assertEqual(normalize_date("15 октября 2014"), "2014-10-15")
+
+    def test_text_dates_require_explicit_valid_year(self):
+        for raw in ("15 октября", "15 октября 14", "31 февраля 2014", "15 октября 0000"):
+            with self.subTest(raw=raw):
+                self.assertIsNone(normalize_date(raw))
+        self.assertEqual(normalize_date("29 февраля 2024"), "2024-02-29")
+        self.assertEqual(normalize_date("2 января 1998"), "1998-01-02")
 
     def test_license_number_normalization(self):
         self.assertEqual(normalize_license_number("12 34 567890"), "12 34 567890")
