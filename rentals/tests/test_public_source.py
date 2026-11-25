@@ -17,3 +17,8 @@ class PublicSourceTests(SimpleTestCase):
         response = self.client.get('/accounts/login/')
         self.assertContains(response, 'Contract workflow')
         self.assertContains(response, 'workflow-mark.svg')
+
+    def test_django_entry_points_are_importable(self):
+        from django.utils.module_loading import import_string
+        self.assertTrue(callable(import_string(settings.WSGI_APPLICATION)))
+        self.assertTrue(callable(import_string(settings.ASGI_APPLICATION)))

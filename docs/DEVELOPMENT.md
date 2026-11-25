@@ -96,3 +96,16 @@ an isolated environment and add coverage for new business rules.
 Keep uploaded identity documents, customer data, private environment files, generated
 contracts and service credentials outside version control. Preserve third-party
 licence notices; no new licence is selected by this documentation change.
+
+## Isolated regression command
+
+```bash
+DJANGO_SETTINGS_MODULE=car_rental.test_settings python manage.py test rentals.tests
+python scripts/check_public_history.py
+```
+
+The SQLite test profile never connects to an operational database. Document
+rendering, customer search and publication-boundary checks pass in the isolated
+review environment. Three inherited OCR regressions remain: a stale mock target,
+text-date year parsing and mixed-script issuer cleanup. They are unrelated to
+anonymization; OCR requires separate functional review before production use.

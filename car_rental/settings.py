@@ -51,8 +51,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "car_rental.wsgi:application"
-ASGI_APPLICATION = "car_rental.asgi:application"
+WSGI_APPLICATION = "car_rental.wsgi.application"
+ASGI_APPLICATION = "car_rental.asgi.application"
 
 
 def _database_from_url(url: str | None):
