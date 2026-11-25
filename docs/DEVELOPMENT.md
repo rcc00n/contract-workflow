@@ -89,9 +89,9 @@ review before they become saved customer data or contract text.
 ## Existing tests and contribution
 
 [`rentals/tests/`](../rentals/tests/) contains document rendering, customer search,
-OCR endpoint and parser regression scenarios. No test-suite pass is claimed by this
-documentation refresh. When changing behavior, run the relevant existing cases in
-an isolated environment and add coverage for new business rules.
+OCR endpoint and parser regression scenarios. The CI workflow runs them with SQLite, synthetic documents and mocked OCR.
+When changing behavior, run the cases in an isolated environment and add coverage
+for new business rules.
 
 Keep uploaded identity documents, customer data, private environment files, generated
 contracts and service credentials outside version control. Preserve third-party
@@ -104,8 +104,8 @@ DJANGO_SETTINGS_MODULE=car_rental.test_settings python manage.py test rentals.te
 python scripts/check_public_history.py
 ```
 
-The SQLite test profile never connects to an operational database. Document
-rendering, customer search and publication-boundary checks pass in the isolated
-review environment. Three inherited OCR regressions remain: a stale mock target,
-text-date year parsing and mixed-script issuer cleanup. They are unrelated to
-anonymization; OCR requires separate functional review before production use.
+The SQLite test profile never connects to an operational database. The locked
+`ci/requirements.txt` profile runs document rendering, customer search, privacy
+boundaries and OCR parsing/endpoint tests without OCR model downloads. It does not
+validate OCR inference quality or PostgreSQL concurrency. Text dates require an
+explicit four-digit year; no date is inferred from today.

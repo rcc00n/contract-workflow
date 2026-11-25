@@ -132,31 +132,27 @@ def _has_enough_cyrillic(text: str) -> bool:
     return True
 
 
-def _looks_like_explicit_date(text: str) -> bool:
-    if not text:
-        return False
-    if RU_MONTH_RE.search(text):
-        has_day = re.search(r"\b\d{1,2}\b", text)
-        has_year = re.search(r"\b\d{4}\b", text) or re.search(r"\b\d{2}\b", text)
-        return bool(has_day and has_year)
-    return False
-
-
 def _parse_russian_text_date(text: str | None) -> str | None:
-    if not text or _ru_time_parse is None:
+    # Identity documents require an explicit year; relative-date parsers can
+    # silently resolve an old licence date to the current/next calendar year.
+    candidate = normalize_whitespace(text or "").translate(LATIN_TO_CYR)
+    month = RU_MONTH_RE.search(candidate)
+    if not month:
         return None
-    candidate = normalize_whitespace(text).translate(LATIN_TO_CYR)
-    if not _looks_like_explicit_date(candidate):
+    day = re.search(r"\b([0-9]{1,2})\s*$", candidate[:month.start()])
+    year = re.match(r"\s+([0-9]{4})\b", candidate[month.end():])
+    if not day or not year:
+        return None
+    prefixes = ("янв", "фев", "мар", "апр", "ма", "июн", "июл",
+                "авг", "сен", "окт", "ноя", "дек")
+    month_number = next((i for i, prefix in enumerate(prefixes, 1)
+                         if month.group().lower().startswith(prefix)), None)
+    if month_number is None:
         return None
     try:
-        parsed = _ru_time_parse(candidate, allowed_results=(date,))
-    except Exception:
+        return date(int(year[1]), month_number, int(day[1])).isoformat()
+    except ValueError:
         return None
-    if isinstance(parsed, datetime):
-        parsed = parsed.date()
-    if isinstance(parsed, date):
-        return parsed.strftime("%Y-%m-%d")
-    return None
 
 
 def normalize_date(text: str | None) -> str | None:
@@ -360,6 +356,10 @@ def _clean_issuer_line(text: str) -> str:
     cleaned = _strip_label_prefix(text)
     if not cleaned:
         return ""
+    # Discard a separate Latin transliteration before OCR character repair.
+    # Otherwise GIBDD leaves a Cyrillic B and duplicates the issuing code.
+    segments = re.split(r"[/|\n]+", cleaned)
+    cleaned = " ".join(segment for segment in segments if CYRILLIC_RE.search(segment))
     cleaned = cleaned.translate(LATIN_TO_CYR)
     cleaned = ISSUER_CLEAN_RE.sub(" ", cleaned)
     cleaned = normalize_whitespace(cleaned)
