@@ -1,16 +1,6 @@
-<p align="center">
-  <img src="docs/assets/banner-dark.svg#gh-dark-mode-only" alt="ContractWorkflow — fleet, rental pricing and contracts" width="100%">
-  <img src="docs/assets/banner-light.svg#gh-light-mode-only" alt="ContractWorkflow — fleet, rental pricing and contracts" width="100%">
-</p>
+# Contract workflow
 
-<p align="center">
-  <a href="#capabilities">Capabilities</a> ·
-  <a href="#architecture">Architecture</a> ·
-  <a href="#local-development">Local development</a> ·
-  <a href="#source-map">Source map</a>
-</p>
-
-A Django workspace for car-rental operations. ContractWorkflow connects fleet and
+A Django workspace for car-rental operations. Contract workflow connects fleet and
 customer records with rental pricing, agreement templates and document generation,
 so the information entered for a rental can carry through to its contract.
 
@@ -83,7 +73,7 @@ document-rendering environment was verified during the documentation refresh.
 | Contract generation | [rentals/services/contract_renderer.py](rentals/services/contract_renderer.py) |
 | OCR pipeline | [rentals/ocr/](rentals/ocr/) |
 | Existing regressions | [rentals/tests/](rentals/tests/) |
-| Contract and import examples | [sample_data/](sample_data/) · [CSV examples](scripts/import_export_examples/) |
+| Privacy and publication boundaries | [Privacy](docs/PRIVACY.md) |
 | Setup and document boundaries | [Development](docs/DEVELOPMENT.md) |
 
 ## Scope and limitations

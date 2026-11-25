@@ -1,4 +1,4 @@
-# ContractWorkflow development guide
+# Contract workflow development guide
 
 ## Local configuration
 
@@ -51,10 +51,9 @@ Business defaults live in the `BusinessSettings` model. Review changes to these
 values alongside generated document totals; they are business configuration, not
 decorative interface settings.
 
-Vehicle/customer import examples are in
-[`scripts/import_export_examples/`](../scripts/import_export_examples/). Management
-commands and UI imports should be exercised with local sample files, not private
-customer exports. Imports and deletions change database records.
+Create synthetic import files locally when testing. Customer exports and business
+documents are intentionally excluded from the source repository. Imports and
+deletions change database records.
 
 ## Contract templates
 
@@ -62,11 +61,11 @@ customer exports. Imports and deletions change database records.
 help. [`contract_renderer.py`](../rentals/services/contract_renderer.py) builds values
 from the rental, fleet and customer data, then renders the selected document format.
 
-Examples are provided in
-[`sample_data/contract_templates/`](../sample_data/contract_templates/). Keep their
-role as examples explicit. Review the template wording, placeholder substitutions,
-fonts, layout and totals for the intended business before using generated documents.
-The application does not establish legal validity.
+Business contract templates are intentionally not distributed. Create private
+templates for the intended business and review their wording, placeholders, fonts,
+layout and totals before use. Tests construct minimal synthetic document fixtures
+in memory; they are not legal templates. The application does not establish legal
+validity.
 
 ## Optional driving-licence OCR
 
